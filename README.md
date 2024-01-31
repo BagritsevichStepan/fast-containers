@@ -54,4 +54,16 @@ In addition, to speed up [open addressing](#map_addressing) is uses Robin Hood H
 # Allocators
 Several useful allocators implementations.
 
+## <a name="stack_allocator"></a>StackBasedAllocator
+This allocator that uses stack memory.
+
+The `StackBasedAllocator` uses chunks of different sizes (each of them is a power of two) to perform allocations.
+
+## <a name="huge_page_allocator"></a>HugePageAllocator
+`HugePageAllocator` uses huge pages during allocating.
+
+The allocator is well suited for collections with a large data set.
+
+It reduses cache misses in TLB. So in some cases it can significantly speed up your program.
+
 
