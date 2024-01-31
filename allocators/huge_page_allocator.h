@@ -1,7 +1,7 @@
 #ifndef FAST_CONTAINERS_HUGE_PAGE_ALLOCATOR_H
 #define FAST_CONTAINERS_HUGE_PAGE_ALLOCATOR_H
 
-#include <sys/mman.h> // mmap, munmap
+#include <sys/mman.h>
 
 #define MMAP_ACCESS (PROT_READ | PROT_WRITE)
 #define MMAP_TYPE (MAP_PRIVATE | MAP_ANONYMOUS | MAP_HUGETLB)
