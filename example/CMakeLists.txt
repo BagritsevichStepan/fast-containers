@@ -1,0 +1,13 @@
+project(fast_containers_example)
+
+set(EXAMPLE_ANY_TARGET any_example)
+set(EXAMPLE_ID_CONTAINER_TARGET id_container_example)
+set(EXAMPLE_ALLOCATORS_TARGET allocators_example)
+
+add_executable(EXAMPLE_ANY_TARGET any_example.cpp)
+add_executable(EXAMPLE_ID_CONTAINER_TARGET id_container_example.cpp)
+add_executable(EXAMPLE_ALLOCATORS_TARGET allocators_example.cpp)
+
+target_include_directories(EXAMPLE_ANY_TARGET PRIVATE ${CONTAINERS_DIRECTORIES})
+target_include_directories(EXAMPLE_ID_CONTAINER_TARGET PRIVATE ${CONTAINERS_DIRECTORIES})
+target_include_directories(EXAMPLE_ALLOCATORS_TARGET PRIVATE ${CONTAINERS_DIRECTORIES})
