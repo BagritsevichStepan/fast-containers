@@ -1,16 +1,17 @@
 #ifndef FAST_CONTAINERS_INPLACE_ANY_H
 #define FAST_CONTAINERS_INPLACE_ANY_H
 
+#include <utility>
 #include <type_traits>
 #include <cstring>
-
-#include "common.h"
 
 namespace fast_containers {
 
     // todo inplace base
 
-    template<ContainerCapacity N, ContainerAlignment Alignment = N>
+
+
+    template<std::size_t N, std::size_t Alignment = N>
     class InplaceAny {
 
     private:
@@ -18,7 +19,7 @@ namespace fast_containers {
     };
 
 
-    template<ContainerCapacity N, ContainerAlignment Alignment = N>
+    template<std::size_t N, std::size_t Alignment = N>
     class InplaceTrivialAny {
     private:
         template<typename T>
@@ -48,7 +49,7 @@ namespace fast_containers {
         // todo destroy
         ~InplaceTrivialAny() = default;
 
-        static constexpr ContainerCapacity GetCapacity() noexcept;
+        static constexpr std::size_t GetCapacity() noexcept;
 
     private:
         template<typename T>
@@ -61,12 +62,12 @@ namespace fast_containers {
     // Implementation
 
     // InplaceTrivialAny
-    template<ContainerCapacity N, ContainerAlignment Alignment>
+    template<std::size_t N, std::size_t Alignment>
     InplaceTrivialAny<N, Alignment>::InplaceTrivialAny(const InplaceTrivialAny& other) {
         Copy(other.buffer_);
     }
 
-    template<ContainerCapacity N, ContainerAlignment Alignment>
+    template<std::size_t N, std::size_t Alignment>
     InplaceTrivialAny<N, Alignment> &InplaceTrivialAny<N, Alignment>::operator=(const InplaceTrivialAny& other) {
         if (this != &other) {
             Copy(other.buffer_);
@@ -74,39 +75,39 @@ namespace fast_containers {
         return *this;
     }
 
-    template<ContainerCapacity N, ContainerAlignment Alignment>
+    template<std::size_t N, std::size_t Alignment>
     template<typename T, typename>
     InplaceTrivialAny<N, Alignment>::InplaceTrivialAny(T&& other) noexcept {
         Copy(std::forward<T>(other));
     }
 
-    template<ContainerCapacity N, ContainerAlignment Alignment>
+    template<std::size_t N, std::size_t Alignment>
     template<typename T, typename>
     InplaceTrivialAny<N, Alignment>& InplaceTrivialAny<N, Alignment>::operator=(T&& other) noexcept {
         Copy(std::forward<T>(other));
         return *this;
     }
 
-    template<ContainerCapacity N, ContainerAlignment Alignment>
+    template<std::size_t N, std::size_t Alignment>
     template<typename T>
     T& InplaceTrivialAny<N, Alignment>::Get() {
         return *reinterpret_cast<T*>(&buffer_);
     }
 
-    template<ContainerCapacity N, ContainerAlignment Alignment>
+    template<std::size_t N, std::size_t Alignment>
     template<typename T>
     const T& InplaceTrivialAny<N, Alignment>::Get() const {
         return *reinterpret_cast<const T*>(&buffer_);
     }
 
-    template<ContainerCapacity N, ContainerAlignment Alignment>
+    template<std::size_t N, std::size_t Alignment>
     template<typename T>
     void InplaceTrivialAny<N, Alignment>::Copy(T&& other) {
         std::memcpy(reinterpret_cast<char*>(&buffer_), reinterpret_cast<const char*>(&other), sizeof(T));
     }
 
-    template<ContainerCapacity N, ContainerAlignment Alignment>
-    constexpr ContainerCapacity InplaceTrivialAny<N, Alignment>::GetCapacity() noexcept {
+    template<std::size_t N, std::size_t Alignment>
+    constexpr std::size_t InplaceTrivialAny<N, Alignment>::GetCapacity() noexcept {
         return N;
     }
 
