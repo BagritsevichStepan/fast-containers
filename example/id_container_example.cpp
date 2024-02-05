@@ -78,24 +78,9 @@ int main() {
     Read(id_container, ids);
 
     Construct(kCapacity / 2, id_container, ids);
-    /*Read(id_container, ids);
+    Read(id_container, ids);
     Destroy(kCapacity / 2, kCapacity, id_container, ids);
     Construct(kCapacity / 2, id_container, ids);
     Read(id_container, ids);
-    */
     return 0;
 }
-
-/*
-Order: [id=4294967416, price=1025202362, client_id=1350490027]
-Order: [id=4294967440, price=783368690, client_id=1102520059]
-Order: [id=4294967464, price=2044897763, client_id=1967513926]
-Order: [id=4294967488, price=1365180540, client_id=1540383426]
-Order: [id=4294967512, price=304089172, client_id=1303455736]
-
-Order: [id=4294967416, price=1025202362, client_id=1350490027]
-Order: [id=4294967440, price=783368690, client_id=1102520059]
-Order: [id=4294967464, price=2044897763, client_id=1967513926]
-Order: [id=4294967488, price=1365180540, client_id=1540383426]
-Order: [id=4294967512, price=140721769610928, client_id=1303455736]
- */
