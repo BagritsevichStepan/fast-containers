@@ -61,7 +61,11 @@ void HeapSort(std::vector<std::int32_t> v) {
 } 
 ```
 
-Fast implementation of [`std::pripority_queue`](https://en.cppreference.com/w/cpp/container/priority_queue).
+Fast implementation of [`std::priority_queue`](https://en.cppreference.com/w/cpp/container/priority_queue).
+
+To get the minimum element from the heap `Top()` method, use `fast_containers::MinDHeap`. And conversely, for the maximum element, use `fast_containers::MaxDHeap`.
+
+In order to use your custom comparator, please use the base class `fast_containers::DHeap<typename ValueType, ValueType DefaultValue, std::size_t Capacity, std::size_t D, auto Comparator>`, where `DefaultValue` is the initial value for which `Comparator` returns false.
 
 [D-ary Heap](https://en.wikipedia.org/wiki/D-ary_heap) is faster than a binary heap because it is better located in the cache.
 
