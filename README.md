@@ -1,11 +1,11 @@
 # Fast Containers
-Implementation of low latency stack based containers: IdContainer, DHeap, Map. Fast allocators implementations.
+Implementation of low latency stack based containers: IdObjectPool, DHeap, Map. Fast allocators implementations.
 
 Most of these containers are used as components in HFT.
 
 # Links
 
-+ [IdContainer](#id_container)
++ [IdObjectPool](#id_object_pool)
 + [D-ary Heap](#d_heap)
     * [SIMD](#d_heap_simd)
 + [InplaceAny](#inplace_any)
@@ -17,16 +17,50 @@ Most of these containers are used as components in HFT.
     * [StackBasedAllocator](#stack_allocator)
     * [HugePageAllocator](#huge_page_allocator)
 
-# <a name="id_container"></a>IdContainer
-`IdContainer` is fast [`std::unordered_map`](https://en.cppreference.com/w/cpp/container/unordered_map) and [`std::allocator`](https://en.cppreference.com/w/cpp/memory/allocator) together. It allocates memory for objects and generates a key that can be used to find an object in `O(1)`.
+# <a name="id_object_pool"></a>IdObjectPool
+```cpp
+class Order : public fast_containers::IdObjectPoolElementBase {
+public:
+   using Base::generation_;
+
+   Order(uint64_t price, uint64_t client_id) : price_(price), client_id_(client_id) {}
+
+   uint64_t price_{0};
+   uint64_t client_id_{0};
+};
+
+...
+
+fast_containers::IdObjectPool<Order, Capacity> orders_pool{};
+auto id = orders_pool.Construct(5, 7);
+assert(orders_pool.Contains(id));
+assert(orders_pool.Get(id)->price_ == 5 && orders_pool.Get(id)->client_id_ == 7);
+```
+`IdObjectPool` is fast [`std::unordered_map`](https://en.cppreference.com/w/cpp/container/unordered_map) and [`std::allocator`](https://en.cppreference.com/w/cpp/memory/allocator) together. It allocates memory for objects and generates a key that can be used to find an object in `O(1)`.
+
+To use the `IdObjectPool` for your class, it must inherit from the `fast_containers::IdObjectPoolElementBase` class.
 
 The key is generated based on the address and generation. So the user always gets a unique id.
 
-Unlike in the associative `std::unordered_map`, in `IdContainer` the data is located close to each other, which reduces the number of cache misses.
+Unlike in the associative `std::unordered_map`, in `IdObjectPool` the data is located close to each other, which reduces the number of cache misses.
 
 In addition, you can reduce the number of cache misses more by "packaging" data after several deletions. But for this you will need to store another array to support the old IDs.
 
 # <a name="d_heap"></a>D-ary Heap
+```cpp
+void HeapSort(std::vector<std::int32_t> v) {
+   fast_containers::MinDHeap<std::int32_t, Capacity> min_heap{};
+   for (auto x : v) {
+      min_heap.Insert(x);
+   }
+   std::int32_t min_element;
+   for (int i = 0; i < v.size(); i++) {
+      min_heap.Pop(min_element);
+      OutputNextElement(min_element);
+   }
+} 
+```
+
 Fast implementation of [`std::pripority_queue`](https://en.cppreference.com/w/cpp/container/priority_queue).
 
 [D-ary Heap](https://en.wikipedia.org/wiki/D-ary_heap) is faster than a binary heap because it is better located in the cache.
@@ -35,7 +69,17 @@ Fast implementation of [`std::pripority_queue`](https://en.cppreference.com/w/cp
 For integer keys, [SIMD](https://en.wikipedia.org/wiki/Single_instruction,_multiple_data) is used to speed up operations.
 
 # <a name="inplace_any"></a>InplaceAny
+```cpp
+fast_containers::InplaceTrivialAny<32, alignof(int)> a = 5;
+assert(a.Get<int>() == 5);
+a = 543;
+assert(a.Get<int>() != 5);
+assert(a.Get<int>() == 543);
+```
+
 `InplaceAny` is an analog of [`boost::Any`](https://www.boost.org/doc/libs/1_74_0/boost/any.hpp), but unlike it, it allocates memory on the stack.
+
+Use `InplaceTrivialAny` for trivially copyable types. It uses [`std::memcpy`](https://en.cppreference.com/w/cpp/string/byte/memcpy) and thus works faster than basic `InplaceAny`.
 
 Therefore, it works much faster than its analog from `boost`.
 
